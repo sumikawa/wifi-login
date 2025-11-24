@@ -144,5 +144,6 @@ def main():
         exit(1)
 
 if __name__ == "__main__":
-    # debug_http()
+    if '--debug' in sys.argv:
+        debug_http()
     main()
