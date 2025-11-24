@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-import requests
 from bs4 import BeautifulSoup
-import time
+from dotenv import load_dotenv
+from urllib.parse import urljoin
+import json
 import os
+import requests
 import subprocess
 import sys
-from urllib.parse import urljoin
-from dotenv import load_dotenv
-import json
+import time
 
 import logging
 import http.client as http_client
