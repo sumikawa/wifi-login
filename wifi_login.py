@@ -49,7 +49,6 @@ def handle_wi2(session, response, current_url):
     # --- Step 1 logic: 'Next Page' button if it exists such as starbucks ---
     soup = BeautifulSoup(response.text, 'html.parser')
     form = soup.find('form')
-    # print(form)
     if form:
         next_button = soup.find(id='button_next_page')
         if next_button:
@@ -67,7 +66,6 @@ def handle_wi2(session, response, current_url):
     # --- Step 2 logic: 'Accept' button ---
     soup = BeautifulSoup(response.text, 'html.parser')
     form = soup.find('form')
-    print(form)
     if form:
         accept_button = soup.find(id='button_accept')
         if accept_button:
