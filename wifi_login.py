@@ -145,7 +145,6 @@ def main():
             exit(1)
 
         print("[3/3] Checking final status...")
-        print(response)
         if response.ok:
             # A simple 'Success' check might be too naive. Some portals redirect
             # to the original site, or show a success page. We check both.
