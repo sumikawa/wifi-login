@@ -118,7 +118,12 @@ def main():
 
         # 3. Handle Wi-Fi specific login flow
         print("[2/3] Analyzing page and handling Wi-Fi login flow...")
-        response, current_url = handle_wi2(session, response, current_url)
+
+        if current_url.startswith('https://service.wi2.ne.jp/'):
+            response, current_url = handle_wi2(session, response, current_url)
+        else:
+            print("\n[ERROR] The public WiFi is not supported. Happy to receive your pull request.")
+            exit(1)
 
         print("[3/3] Checking final status...")
         print(response)
