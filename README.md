@@ -48,3 +48,11 @@ wifi_login.py
 - 対応する公衆無線LANを増やす。特にEメールアドレスの入力を求められるプロバイダ
 - SSIDを監視して、このスクリプトを自動実行する仕組み (MacOS Tahoeでは厳しそう)
 - 有効期間が切れたあと、自動的に再ログインする
+
+## 注意
+
+無効にしたCaptive Network Assistantを再有効したい場合は下記を実行してください。
+
+```
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -boolean true
+```
