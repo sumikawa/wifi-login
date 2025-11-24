@@ -19,13 +19,13 @@ requests_log = logging.getLogger("requests.packages.urllib3")
 requests_log.setLevel(logging.DEBUG)
 requests_log.propagate = True
 
-# --- Configuration ---
-# Load environment variables from ~/.env
-load_dotenv(verbose=True)
-dotenv_path = os.path.expanduser('~/.env')
-load_dotenv(dotenv_path)
-# ANON_EMAIL is loaded but not used in this version of the script.
-# ANON_EMAIL = os.environ.get("ANON_EMAIL")
+def email():
+    # This function is not used in this version of the script
+    # Load environment variables from ~/.env
+    load_dotenv(verbose=True)
+    dotenv_path = os.path.expanduser('~/.env')
+    load_dotenv(dotenv_path)
+    # WIFI_EMAIL = os.environ.get("WIFI_EMAIL")
 
 def check_captive_portal_status():
     """
