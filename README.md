@@ -57,6 +57,8 @@ wifi_login.py
 
 ## 注意
 
+本スクリプトが未対応の公衆無線LANに接続したい場合は、ブラウザで http://captive.apple.com/ を開いてください。
+
 無効にしたCaptive Network Assistantを再有効したい場合は下記を実行してください。
 
 ```
