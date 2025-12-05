@@ -29,8 +29,6 @@ def email():
     load_dotenv(verbose=True)
     dotenv_path = os.path.expanduser("~/.env")
     load_dotenv(dotenv_path)
-    # WIFI_EMAIL = os.environ.get("WIFI_EMAIL")
-
 
 def check_captive_portal_status():
     """
@@ -55,11 +53,43 @@ def check_captive_portal_status():
         sys.exit(1)
 
 
+def handle_mcd(session, response, current_url):
+    # For McDonald's
+    next_url = 'https://mdj.intplus-freewifi.com/mdj/jp/login'
+    print(f"      -> Following to {next_url}")
+
+    response = session.get(next_url, timeout=10)
+    response.raise_for_status()
+    current_url = response.url
+
+    print(f"      -> Now at: {current_url}")
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    form = soup.find("form")
+    if form:
+        login_url = form['action'];
+
+        payload = {}
+        for input in soup.select('form input'):
+            if not input.has_attr('name'):
+                continue
+            value =  input['value'] if input.has_attr('value') else ''
+            payload[input['name']] = value
+
+        email()
+        payload['mail_address'] = os.environ.get("WIFI_MCD_EMAIL")
+        payload['password'] = os.environ.get("WIFI_MCD_PASSWORD")
+        payload['agreement'] = 1
+
+        print(f"      -> Found 'login' action. Posting to {login_url}")
+
+        response = session.post(login_url, data=payload, timeout=10)
+    else:
+        raise RuntimeError("Could not find login form on the login page.")
+
+    return response, current_url
+
 def handle_wi2(session, response, current_url):
-    """
-    Handles the Wi2 free Wi-Fi specific login steps by finding and submitting
-    the necessary forms. This function combines the original steps 3 and 4.
-    """
     # --- Step 1 logic: 'Next Page' button if it exists such as starbucks ---
     soup = BeautifulSoup(response.text, "html.parser")
     form = soup.find("form")
@@ -138,6 +168,8 @@ def main():
 
         if current_url.startswith("https://service.wi2.ne.jp/"):
             response, current_url = handle_wi2(session, response, current_url)
+        elif current_url.startswith("https://mdj.intplus-freewifi.com/"):
+            response, current_url = handle_mcd(session, response, current_url)
         else:
             print(
                 "\n[ERROR] The public WiFi is not supported. Happy to receive your pull request."
