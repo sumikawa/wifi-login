@@ -38,6 +38,15 @@ pip install -r requirements.txt
 cp wifi_login.py /somewhere/path/bin/
 ```
 
+ユーザ名とパスワードの入力が必要な公衆無線WiFi(例: マクドナルド)を利用する場合は、```~/.env```ファイルを作成して、下記の行を記述してください。
+イコールの左側の文字列(環境変数)は、公衆無線WiFiごとに変わります。
+[対応している公衆無線LAN](#%E4%BA%8B%E5%89%8D%E6%BA%96%E5%82%99)を参照してください。
+
+```
+WIFI_MCD_EMAIL = your_email_adderess
+WIFI_MCD_PASSWORD = your_password
+```
+
 ## 使い方
 
 公衆無線LANに接続したら、下記コマンドを実行してください。公衆無線LAN種別を自動的に検知して、ログインを行います。
