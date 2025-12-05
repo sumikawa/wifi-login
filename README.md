@@ -43,14 +43,6 @@ cp wifi_login.py /somewhere/path/bin/
 wifi_login.py
 ```
 
-## TODO
-
-- 対応する公衆無線LANを増やす。特にEメールアドレスの入力を求められるプロバイダ
-- SSIDを監視して、このスクリプトを自動実行する仕組み
-  - ネット記事では下記ファイルをLaunchAgentで見張ると書かれているが、手元で試した限りではWiFi off/onのタイミングでこのファイルは変化するのであり、SSIDが変わっただけでは変化しないよう見える(MacOS Tahoe)
-  - /Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist
-- 有効期間が切れたあと、自動的に再ログインする
-
 ## 注意
 
 無効にしたCaptive Network Assistantを再有効したい場合は下記を実行してください。
