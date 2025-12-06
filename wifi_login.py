@@ -30,6 +30,7 @@ def email():
     dotenv_path = os.path.expanduser("~/.env")
     load_dotenv(dotenv_path)
 
+
 def check_captive_portal_status():
     """
     Exits if an active captive portal is detected, based on system command.
@@ -55,7 +56,7 @@ def check_captive_portal_status():
 
 def handle_mcd(session, response, current_url):
     # For McDonald's
-    next_url = 'https://mdj.intplus-freewifi.com/mdj/jp/login'
+    next_url = "https://mdj.intplus-freewifi.com/mdj/jp/login"
     print(f"      -> Following to {next_url}")
 
     response = session.get(next_url, timeout=10)
@@ -67,19 +68,19 @@ def handle_mcd(session, response, current_url):
     soup = BeautifulSoup(response.text, "html.parser")
     form = soup.find("form")
     if form:
-        login_url = form['action'];
+        login_url = form["action"]
 
         payload = {}
-        for input in soup.select('form input'):
-            if not input.has_attr('name'):
+        for input in soup.select("form input"):
+            if not input.has_attr("name"):
                 continue
-            value =  input['value'] if input.has_attr('value') else ''
-            payload[input['name']] = value
+            value = input["value"] if input.has_attr("value") else ""
+            payload[input["name"]] = value
 
         email()
-        payload['mail_address'] = os.environ.get("WIFI_MCD_EMAIL")
-        payload['password'] = os.environ.get("WIFI_MCD_PASSWORD")
-        payload['agreement'] = 1
+        payload["mail_address"] = os.environ.get("WIFI_MCD_EMAIL")
+        payload["password"] = os.environ.get("WIFI_MCD_PASSWORD")
+        payload["agreement"] = 1
 
         print(f"      -> Found 'login' action. Posting to {login_url}")
 
@@ -88,6 +89,7 @@ def handle_mcd(session, response, current_url):
         raise RuntimeError("Could not find login form on the login page.")
 
     return response, current_url
+
 
 def handle_wi2(session, response, current_url):
     # --- Step 1 logic: 'Next Page' button if it exists such as starbucks ---
