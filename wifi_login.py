@@ -54,6 +54,17 @@ def check_captive_portal_status():
         sys.exit(1)
 
 
+def prepare_payload(soup):
+    payload = {}
+    for input in soup.select("form input"):
+        if not input.has_attr("name"):
+            continue
+        value = input["value"] if input.has_attr("value") else ""
+        payload[input["name"]] = value
+
+    return payload
+
+
 def handle_mcd(session, response, current_url):
     # For McDonald's
     next_url = "https://mdj.intplus-freewifi.com/mdj/jp/login"
@@ -69,14 +80,7 @@ def handle_mcd(session, response, current_url):
     form = soup.find("form")
     if form:
         login_url = form["action"]
-
-        payload = {}
-        for input in soup.select("form input"):
-            if not input.has_attr("name"):
-                continue
-            value = input["value"] if input.has_attr("value") else ""
-            payload[input["name"]] = value
-
+        payload = prepare_payload(soup)
         email()
         payload["mail_address"] = os.environ.get("WIFI_MCD_EMAIL")
         payload["password"] = os.environ.get("WIFI_MCD_PASSWORD")
