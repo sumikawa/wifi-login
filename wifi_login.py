@@ -81,7 +81,8 @@ def handle_mcd(session, response, current_url):
     if form:
         login_url = form["action"]
         payload = prepare_payload(soup)
-        email()
+        if os.environ.get("WIFI_MCD_EMAIL") != None:
+            email()
         payload["mail_address"] = os.environ.get("WIFI_MCD_EMAIL")
         payload["password"] = os.environ.get("WIFI_MCD_PASSWORD")
         payload["agreement"] = 1
