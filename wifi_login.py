@@ -8,6 +8,7 @@ import requests
 import subprocess
 import sys
 import time
+import urllib
 
 
 def debug_http():
@@ -64,6 +65,68 @@ def prepare_payload(soup):
 
     return payload
 
+
+def handle_jre(session, response, current_url):
+    # For JR East
+    # Step 1
+    response = session.get(current_url, timeout=10)
+    response.raise_for_status()
+    current_url = response.url
+    print(f"      -> Following to {current_url}")
+    qs = urllib.parse.urlparse(current_url).query
+    qs_d = urllib.parse.parse_qs(qs)
+    token = qs_d['token'][0]
+
+    # Step 2
+    client_id = '04PgBIBVYxLvxqd6kHYNq' # Not sure how the ID is got
+    next_url = f'https://uaf.wifi-cloud.jp/email-return/auth/authorize?state={token}&client_id={client_id}&redirect_uri=https%3A%2F%2Fcaptive-portal.wifi-cloud.jp%2F%23%2Fcallback&lang=ja'
+    print(f"      -> Following to {next_url}")
+    response = session.get(next_url, timeout=10)
+    response.raise_for_status()
+
+    # Step 3
+    soup = BeautifulSoup(response.text, "html.parser")
+    form = soup.find("form")
+    payload = prepare_payload(soup)
+    email()
+    email_address = os.environ.get("WIFI_COMMON_EMAIL")
+    payload["email"] = email_address
+    next_url = response.url
+    print(f"      -> Following to {next_url}")
+    response = session.post(next_url, data=payload, timeout=10)
+    response.raise_for_status()
+
+    # Step 4
+    current_url = response.url
+    qs = urllib.parse.urlparse(current_url).query
+    qs_d = urllib.parse.parse_qs(qs)
+    state = qs_d['state'][0]
+    code = qs_d['code'][0]
+    next_url = f'https://captive-portal.wifi-cloud.jp/?lang=ja&state={state}&code={code}'
+    print(f"      -> Following to {next_url}")
+    response = session.get(next_url, timeout=10)
+    response.raise_for_status()
+
+    # Step 5
+    next_url = 'https://session-api.wifi-cloud.jp/auth'
+    payload = {
+        'code': code,
+        'state': state
+    }
+    response = session.post(next_url, data=payload, timeout=10)
+    response.raise_for_status()
+    response_json = json.loads(response.text)
+
+    # Step 6
+    next_url = response_json['redirect']['url']
+    print(f"      -> Following to {next_url}")
+    response = session.get(next_url, timeout=10)
+    current_url = response.url
+
+    print(f"\n[COMPLETED] Final step submitted.")
+    print(f'The verificaion mail has been sent to {email_address}. You need to click URL inside email within 10 minues')
+
+    return response, current_url
 
 def handle_mcd(session, response, current_url):
     # For McDonald's
@@ -177,6 +240,8 @@ def main():
             response, current_url = handle_wi2(session, response, current_url)
         elif current_url.startswith("https://mdj.intplus-freewifi.com/"):
             response, current_url = handle_mcd(session, response, current_url)
+        elif current_url.startswith("https://captive-portal.wifi-cloud.jp/"):
+            response, current_url = handle_jre(session, response, current_url)
         else:
             print(
                 "\n[ERROR] The public WiFi is not supported. Happy to receive your pull request."
