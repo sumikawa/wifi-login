@@ -56,6 +56,22 @@ WIFI_MCD_PASSWORD = your_password
 wifi_login.py
 ```
 
+## 1Passwordユーザー
+
+1Passwordユーザーは```~/.env```ファイルにパスワードを記述せずに、```op://``` から始まるリファレンスを設定してください。
+1Password CLI経由でスクリプトを実行することで、パスワードをセキュアに保管できます。
+
+```
+WIFI_MCD_EMAIL = op://Private/Mcdonalds/username
+WIFI_MCD_PASSWORD = op://Private/Mcdonalds/password
+```
+
+```
+op run -- wifi_login.py
+```
+
+詳細は、1Password CLIの[https://developer.1password.com/docs/cli/reference/commands/run/](マニュアル)を参照ください。
+
 ## 注意
 
 本スクリプトが未対応の公衆無線LANに接続したい場合は、ブラウザで http://captive.apple.com/ を開いてください。
