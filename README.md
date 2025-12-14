@@ -70,7 +70,7 @@ WIFI_MCD_PASSWORD = op://Private/Mcdonalds/password
 op run -- wifi_login.py
 ```
 
-詳細は、1Password CLIの[https://developer.1password.com/docs/cli/reference/commands/run/](マニュアル)を参照ください。
+詳細は、1Password CLIの[マニュアル](https://developer.1password.com/docs/cli/reference/commands/run/)を参照ください。
 
 ## 注意
 
