@@ -24,12 +24,22 @@ def debug_http():
     requests_log.propagate = True
 
 
-def email():
-    # This function is not used in this version of the script
-    # Load environment variables from ~/.env
+def get_email(email_env, password_env):
     load_dotenv(verbose=True)
     dotenv_path = os.path.expanduser("~/.env")
     load_dotenv(dotenv_path)
+
+    email = os.environ.get(email_env)
+    if password_env != None:
+        password = os.environ.get(password_env)
+    else:
+        password = None
+
+    if email == None or email.startswith('op://'):
+        print(f"\n[ERROR] Env variable {email_env} is not set")
+        exit(1)
+
+    return(email, password)
 
 
 def check_captive_portal_status():
@@ -88,9 +98,7 @@ def handle_jre(session, response, current_url):
     soup = BeautifulSoup(response.text, "html.parser")
     form = soup.find("form")
     payload = prepare_payload(soup)
-    email()
-    email_address = os.environ.get("WIFI_COMMON_EMAIL")
-    payload["email"] = email_address
+    payload["email"], _dummy = get_email("WIFI_COMMON_EMAIL", None)
     next_url = response.url
     print(f"      -> Following to {next_url}")
     response = session.post(next_url, data=payload, timeout=10)
@@ -130,6 +138,9 @@ def handle_jre(session, response, current_url):
 
 def handle_mcd(session, response, current_url):
     # For McDonald's
+    if os.environ.get("WIFI_MCD_EMAIL") == None:
+        email, password = get_email("WIFI_MCD_EMAIL", "WIFI_MCD_PASSWORD")
+
     next_url = "https://mdj.intplus-freewifi.com/mdj/jp/login"
     print(f"      -> Following to {next_url}")
 
@@ -144,8 +155,6 @@ def handle_mcd(session, response, current_url):
     if form:
         login_url = form["action"]
         payload = prepare_payload(soup)
-        if os.environ.get("WIFI_MCD_EMAIL") != None:
-            email()
         payload["mail_address"] = os.environ.get("WIFI_MCD_EMAIL")
         payload["password"] = os.environ.get("WIFI_MCD_PASSWORD")
         payload["agreement"] = 1
