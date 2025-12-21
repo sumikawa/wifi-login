@@ -35,11 +35,11 @@ def get_email(email_env, password_env):
     else:
         password = None
 
-    if email == None or email.startswith('op://'):
+    if email == None or email.startswith("op://"):
         print(f"\n[ERROR] Env variable {email_env} is not set")
         exit(1)
 
-    return(email, password)
+    return (email, password)
 
 
 def check_captive_portal_status():
@@ -85,11 +85,11 @@ def handle_jre(session, response, current_url):
     print(f"      -> Following to {current_url}")
     qs = urllib.parse.urlparse(current_url).query
     qs_d = urllib.parse.parse_qs(qs)
-    token = qs_d['token'][0]
+    token = qs_d["token"][0]
 
     # Step 2
-    client_id = '04PgBIBVYxLvxqd6kHYNq' # Not sure how the ID is got
-    next_url = f'https://uaf.wifi-cloud.jp/email-return/auth/authorize?state={token}&client_id={client_id}&redirect_uri=https%3A%2F%2Fcaptive-portal.wifi-cloud.jp%2F%23%2Fcallback&lang=ja'
+    client_id = "04PgBIBVYxLvxqd6kHYNq"  # Not sure how the ID is got
+    next_url = f"https://uaf.wifi-cloud.jp/email-return/auth/authorize?state={token}&client_id={client_id}&redirect_uri=https%3A%2F%2Fcaptive-portal.wifi-cloud.jp%2F%23%2Fcallback&lang=ja"
     print(f"      -> Following to {next_url}")
     response = session.get(next_url, timeout=10)
     response.raise_for_status()
@@ -108,33 +108,35 @@ def handle_jre(session, response, current_url):
     current_url = response.url
     qs = urllib.parse.urlparse(current_url).query
     qs_d = urllib.parse.parse_qs(qs)
-    state = qs_d['state'][0]
-    code = qs_d['code'][0]
-    next_url = f'https://captive-portal.wifi-cloud.jp/?lang=ja&state={state}&code={code}'
+    state = qs_d["state"][0]
+    code = qs_d["code"][0]
+    next_url = (
+        f"https://captive-portal.wifi-cloud.jp/?lang=ja&state={state}&code={code}"
+    )
     print(f"      -> Following to {next_url}")
     response = session.get(next_url, timeout=10)
     response.raise_for_status()
 
     # Step 5
-    next_url = 'https://session-api.wifi-cloud.jp/auth'
-    payload = {
-        'code': code,
-        'state': state
-    }
+    next_url = "https://session-api.wifi-cloud.jp/auth"
+    payload = {"code": code, "state": state}
     response = session.post(next_url, data=payload, timeout=10)
     response.raise_for_status()
     response_json = json.loads(response.text)
 
     # Step 6
-    next_url = response_json['redirect']['url']
+    next_url = response_json["redirect"]["url"]
     print(f"      -> Following to {next_url}")
     response = session.get(next_url, timeout=10)
     current_url = response.url
 
     print(f"\n[COMPLETED] Final step submitted.")
-    print(f'The verificaion mail has been sent to {email_address}. You need to click URL inside email within 10 minues')
+    print(
+        f"The verificaion mail has been sent to {email_address}. You need to click URL inside email within 10 minues"
+    )
 
     return response, current_url
+
 
 def handle_mcd(session, response, current_url):
     # For McDonald's
