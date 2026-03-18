@@ -14,6 +14,7 @@ GUIでログイン認証画面をクリックするより素早くログイン�
 |すかいらーくグループ|||ガストで動作確認|
 |マクドナルド|WIFI_MCD_EMAIL|WIFI_MCD_PASSWORD||
 |JR東日本|WIFI_COMMON_EMAIL||メールに送付される認証URLは自身でクリックが必要|
+|コメダ珈琲|Komeda_WI-FI|||
 
 これ以外は対応していません。Pull Requestをお待ちしています。
 
