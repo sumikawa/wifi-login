@@ -98,7 +98,8 @@ def handle_jre(session, response, current_url):
     soup = BeautifulSoup(response.text, "html.parser")
     form = soup.find("form")
     payload = prepare_payload(soup)
-    payload["email"], _dummy = get_email("WIFI_COMMON_EMAIL", None)
+    email_address, _dummy = get_email("WIFI_COMMON_EMAIL", None)
+    payload["email"] = email_address
     next_url = response.url
     print(f"      -> Following to {next_url}")
     response = session.post(next_url, data=payload, timeout=10)
@@ -135,6 +136,22 @@ def handle_jre(session, response, current_url):
         f"The verificaion mail has been sent to {email_address}. You need to click URL inside email within 10 minues"
     )
 
+    return response, current_url
+
+
+def handle_komeda(session, response, current_url):
+    # Komeda Coffee
+    qs = urllib.parse.urlparse(current_url).query
+    qs_d = urllib.parse.parse_qs(qs)
+    macaddr = qs_d["stamac"][0]
+    netloc = urllib.parse.urlsplit(current_url).netloc
+    data = {"gender": "", "birth": "", "macaddr": macaddr, "lang": "ja"}
+    json_data = json.dumps(data)
+    headers = {"Content-Type": "application/json"}
+
+    response = session.post(
+        f"http://{netloc}/capi/welcome", data=json_data, headers=headers, timeout=10
+    )
     return response, current_url
 
 
@@ -255,9 +272,19 @@ def main():
             response, current_url = handle_jre(session, response, current_url)
         else:
             print(
-                "\n[ERROR] The public WiFi is not supported. Happy to receive your pull request."
+                f"      -> Unknown public WiFi. Try to move to next step anywa: {current_url}"
             )
-            exit(1)
+            response = session.get(current_url, timeout=10)
+            response.raise_for_status()
+            current_url = response.url
+            if response.text.find("https://github.com/rafrex/spa-github-pages"):
+                response, current_url = handle_komeda(session, response, current_url)
+                exit(1)
+            else:
+                print(
+                    "\n[ERROR] The public WiFi is not supported. Happy to receive your pull request."
+                )
+                exit(1)
 
         print("[3/3] Checking final status...")
         if response.ok:
